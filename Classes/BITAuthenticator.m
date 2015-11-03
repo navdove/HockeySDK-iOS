@@ -298,19 +298,19 @@ static unsigned char kBITPNGEndChunk[4] = {0x49, 0x45, 0x4e, 0x44};
       requirementsFulfilled = NO;
       break;
     }
-    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
+    case BITAuthenticatorIdentificationTypeHockeyAppEmail:
       if(nil == self.authenticationSecret) {
         error = [NSError errorWithDomain:kBITAuthenticatorErrorDomain
-                                    code:BITAuthenticatorEmailMissing
-                                userInfo:@{NSLocalizedDescriptionKey : @"For transparent email validation, the provided email must be set"}];
+                                    code:BITAuthenticatorAuthorizationSecretMissing
+                                userInfo:@{NSLocalizedDescriptionKey : @"For email validation, the authentication secret must be set"}];
         requirementsFulfilled = NO;
         break;
       }
-    case BITAuthenticatorIdentificationTypeHockeyAppEmail:
-      if (nil == self.authenticationSecret) {
+    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
+      if ((nil == self.authenticationSecret) || (nil == self.providedEmail)) {
         error = [NSError errorWithDomain:kBITAuthenticatorErrorDomain
-                                    code:BITAuthenticatorAuthorizationSecretMissing
-                                userInfo:@{NSLocalizedDescriptionKey:@"For email validation, the authentication secret must be set"}];
+                                    code:BITAuthenticatorEmailMissing
+                                userInfo:@{NSLocalizedDescriptionKey : @"For transparent email validation, the authentication secret and provided email must be set"}];
         requirementsFulfilled = NO;
         break;
       }
@@ -699,9 +699,9 @@ static unsigned char kBITPNGEndChunk[4] = {0x49, 0x45, 0x4e, 0x44};
     case BITAuthenticatorIdentificationTypeDevice:
       whatParameter = @"udid";
       break;
-    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeAnonymous:
     case BITAuthenticatorIdentificationTypeHockeyAppEmail:
+    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeHockeyAppUser:
       return nil;
       break;
@@ -746,8 +746,8 @@ static unsigned char kBITPNGEndChunk[4] = {0x49, 0x45, 0x4e, 0x44};
       localizedErrorDescription = @"Failed to retrieve UDID from URL.";
       break;
     }
-    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeHockeyAppEmail:
+    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeAnonymous:
     case BITAuthenticatorIdentificationTypeHockeyAppUser:
       return NO;
@@ -1000,8 +1000,8 @@ static unsigned char kBITPNGEndChunk[4] = {0x49, 0x45, 0x4e, 0x44};
 
 - (NSString *)installationIdentifierParameterString {
   switch (self.identificationType) {
-    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeHockeyAppEmail:
+    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeWebAuth:
       return @"iuid";
     case BITAuthenticatorIdentificationTypeHockeyAppUser:
@@ -1039,8 +1039,8 @@ static unsigned char kBITPNGEndChunk[4] = {0x49, 0x45, 0x4e, 0x44};
 
 - (NSString *)publicInstallationIdentifier {
   switch (self.identificationType) {
-    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeHockeyAppEmail:
+    case BITAuthenticatorIdentificationTypeHockeyAppEmailTransparent:
     case BITAuthenticatorIdentificationTypeHockeyAppUser:
     case BITAuthenticatorIdentificationTypeWebAuth:
       return [self stringValueFromKeychainForKey:kBITAuthenticatorUserEmailKey];
